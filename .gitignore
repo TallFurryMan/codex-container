@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# Byte-compiled / optimized / DLL files
+*.so
+*.dylib
+*.dll
+# C extensions
+a.out
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+*.egg
+# PyInstaller
+*.spec
+# Pytest
+htmlcov/
+coverage.xml
+# Jupyter Notebook
+ipynb_checkpoints/
+
