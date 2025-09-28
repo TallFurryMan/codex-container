@@ -1,57 +1,67 @@
 # Repository Guidelines
 
-The following quick‑start guide contains the most important information for contributors.
-Read it before you open a PR, run the app locally, or start adding tests.
+This document gives contributors a quick reference for how to work on this
+project.  Follow the sections below to keep the codebase clean, consistent
+and approachable.
 
 ## Project Structure & Module Organization
-```
-├── src/          # Main application code
-├── tests/        # Unit and integration tests
-├── assets/       # Static files (images, data, etc.)
-├── Dockerfile    # Build instructions for container image
-└── Makefile      # Convenience build & test aliases
-```
-All source files live under **src/** using the standard Node.js/TypeScript layout. The
-`tests/` folder mirrors the module structure and contains `.spec.ts` files.
+
+- `Dockerfile` – Builds a multi‑arch image with Python, Arduino, Pico SDK,
+  Docker client, and the OpenAI Codex CLI.
+- `Makefile` – Convenience targets for building, testing, and debugging.
+- `test.sh` – Shell script run inside the container to validate tool
+  installations.
+- `README.md` – Project overview and usage guidelines.
+- `AGENTS.md` – This file (contributor guide).
+
+Place all source code in the container; the repository itself just stores
+configuration and CI artifacts.
 
 ## Build, Test, and Development Commands
-| Command | Purpose |
-|---------|---------|
-| `make build` | Compiles TypeScript into `dist/`. |
-| `make test` | Runs Jest tests with coverage. |
-| `make run` | Starts the development server on `localhost:3000`. |
-| `docker build -t codex .` | Builds the container image. |
 
-These targets are defined in the Makefile and can be invoked directly.
+| Target | Command | What it does |
+|--------|---------|--------------|
+| `make build` | Builds multi‑arch image (`linux/amd64` + `linux/arm64`). | Prepares the toolset for cross‑platform testing.
+| `make test` | Build image → run `test.sh` inside container. | Runs sanity checks for Docker client, Python, Arduino CLI
+  and Pico SDK.
+| `make shell` | `docker run -it` with host Docker socket. | Interactive Bash in the container.
+
+All commands use the host’s Docker daemon via a bundled socket.  On macOS
+with Colima, set `DOCKER_SOCKET=/Users/you/.colima/default/docker.sock`.
 
 ## Coding Style & Naming Conventions
-* Indent **4 spaces**, no tabs.
-* Source files use **`*.ts`**; export functions with *PascalCase* for classes and
-  *camelCase* for functions/variables.
-* Constants are **UPPER_SNAKE_CASE**.
-* Run `npm run lint` before committing; it uses ESLint with the `@typescript-eslint` preset.
+
+* **Python** – 4‑space indentation; use `python -m black .` for formatting.
+* **Shell** – `sh`/`bash` scripts start with `#!/usr/bin/env bash` and use
+  `set -euo pipefail`.
+* **File names** – snake_case for scripts; CamelCase for source modules.
+* Run `pre-commit` installs: `black`, `flake8`, `shellcheck`.
 
 ## Testing Guidelines
-* Tests are written with **Jest** and located in `tests/`.
-* Test files must end with `.spec.ts` and be named after the module they test.
-* Coverage must stay above **80 %**; run `make test` to verify before pushing.
-* Mock external services via *jest.mock* or dedicated stub modules.
+
+The repository uses a single shell test (`test.sh`).  Tests are
+lightweight sanity checks:
+
+* Verify required binaries (`python`, `arduino-cli`, `docker`, `codex`).
+* Show minimal output from `docker info` if the daemon is reachable.
+* Report missing components but continue with the rest.
+
+Run with `make test` and review the summary output.
 
 ## Commit & Pull Request Guidelines
-* Use **Conventional Commits** (type(scope): message). Examples:
-  * `feat(auth): add JWT login`
-  * `fix(users): handle empty email`
-* Commit messages should be concise (< 50 chars) and reference an issue with `#123`.
-* PRs must include:
-  * A clear description of the change and motivation.
-  * Links to any related issues.
-  * Updated or added tests for new behaviour.
-  * Screenshots if a UI change is introduced.
-* All PRs must pass CI (build, test, lint) and receive at least one approving review.
 
-## Security & Configuration Tips
-* Secrets are accessed via the `process.env` namespace; never hard‑code them in source.
-* The `config/` folder holds JSON/YAML configurations for each environment. Keep
-  a `.env.example` file in the root to guide contributors.
+* Commit messages use the Conventional Commits format: `feat: …`, `fix: …`.
+* PR titles should match the commit title and describe the change.
+* Include a description, any affected test files, and screenshots if
+  applicable.
+* Attach related issue numbers via `Closes #123`.
 
-Feel free to open issues if you encounter a roadblock or have a suggestion!
+## Other Tips
+
+* If you need to add new tools to the Docker image, edit `Dockerfile` and
+  rerun `make build`.
+* For VS Code dev containers or GitHub Actions, the same `Dockerfile` can be
+  reused; just adjust the socket path via `-v $(DOCKER_SOCKET):/var/run/docker.sock`.
+
+Happy coding!
+
