@@ -20,4 +20,8 @@ htmlcov/
 coverage.xml
 # Jupyter Notebook
 ipynb_checkpoints/
-
+# Temporary files
+*.swp
+*~
+# Shell history
+.bash_history

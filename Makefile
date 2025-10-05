@@ -2,7 +2,7 @@
 
 IMAGE_NAME := codex-tools
 DOCKER_SOCKET ?= /var/run/docker.sock
-ifeq ("$(shell test -S $(DOCKER_SOCKET) && echo yes)","yes")
+ifeq ("$(shell test -S "$(DOCKER_SOCKET)" && echo yes)","yes")
 DOCKER_VOL := -v $(DOCKER_SOCKET):/var/run/docker.sock
 else
 endif
@@ -19,14 +19,21 @@ build:
 
 test: build
 	@echo "Running tests inside container …"
+	@sleep 2
 	@docker run --rm $(DOCKER_VOL) \
 	    -v $(CURDIR)/test.sh:/test.sh:ro \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 	    $(IMAGE_NAME) bash /test.sh
 
 shell:
-	@echo "Starting interactive shell for $(CURDIR) in temporary container …"
-	@docker run -it --rm \
+	@echo "Starting interactive shell for $(CURDIR) in temporary container, using volume codex-data for session persistence …"
+	@docker run -it --rm ${DOCKER_VOL} \
 		-v $(CURDIR):/home/builder/workspace \
+		-v codex-data:/home/builder/.codex \
 		-v $(DOCKER_SOCKET):/var/run/docker.sock \
 		$(IMAGE_NAME) bash
+
+all: test
+
+clean:
+	@echo "Removing image $(IMAGE_NAME) …"
+	-docker rmi $(IMAGE_NAME)

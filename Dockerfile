@@ -62,14 +62,14 @@ RUN mkdir -p /etc/apt/keyrings \
 # Switch to the non‑root user
 USER ${USERNAME}
 RUN mkdir -p /home/${USERNAME}/workspace
-ENV PATH="/home/${USERNAME}/.npm-global/bin:${PATH}"
+ENV HOME=/home/${USERNAME}
 ENV DOCKER_SOCKET=/var/run/docker.sock
 ENV PICO_SDK_PATH=${PICO_SDK_PATH}
-ENV ARDUINO_DATA_DIR=/home/${USERNAME}/.arduino15
-ENV ARDUINO_CACHE_DIR=/home/${USERNAME}/.arduino15/cache
-ENV ARDUINO_CLI_CONFIG_FILE=/home/${USERNAME}/.arduino15/arduino-cli.yaml
-ENV CODEX_CONFIG_FILE=/home/${USERNAME}/.codex/config.toml
-ENV WORKSPACE=/home/${USERNAME}/workspace
+ENV ARDUINO_DATA_DIR=${HOME}/.arduino15
+ENV ARDUINO_CACHE_DIR=${HOME}/.arduino15/cache
+ENV ARDUINO_CLI_CONFIG_FILE=${HOME}/.arduino15/arduino-cli.yaml
+ENV CODEX_CONFIG_FILE=${HOME}/.codex/config.toml
+ENV WORKSPACE=${HOME}/workspace
 WORKDIR ${WORKSPACE}
 
 # Default command to keep container alive for debugging
