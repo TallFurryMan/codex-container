@@ -21,7 +21,12 @@ test: build
 	@echo "Running tests inside container …"
 	@docker run --rm $(DOCKER_VOL) \
 	    -v $(CURDIR)/test.sh:/test.sh:ro \
+		-v /var/run/docker.sock:/var/run/docker.sock \
 	    $(IMAGE_NAME) bash /test.sh
 
 shell:
-	@docker run -it --rm -v $(DOCKER_SOCKET):/var/run/docker.sock $(IMAGE_NAME) bash
+	@echo "Starting interactive shell for $(CURDIR) in temporary container …"
+	@docker run -it --rm \
+		-v $(CURDIR):/home/builder/workspace \
+		-v $(DOCKER_SOCKET):/var/run/docker.sock \
+		$(IMAGE_NAME) bash

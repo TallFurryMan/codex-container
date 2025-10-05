@@ -1,0 +1,15 @@
+model = "gpt-oss:20b"
+model_provider = "local"
+
+disable_response_storage = true
+show_reasoning_content = true
+
+[model_providers.local]
+name = "local"
+base_url = "http://host.docker.internal:11434/v1"
+
+[tools]
+web_search = true
+
+[sandbox_workspace_write]
+network_access = true
