@@ -1,11 +1,14 @@
 # Makefile for building and testing the codex-tools Docker image
 
+IMAGE_REGISTRY := docker.io/tallfurryman
 IMAGE_NAME := codex-tools
+IMAGE_TAG := $(shell git describe --tags --always --dirty)
+
 DOCKER_SOCKET ?= /var/run/docker.sock
 ifeq ("$(shell test -S "$(DOCKER_SOCKET)" && echo yes)","yes")
 DOCKER_VOL := -v $(DOCKER_SOCKET):/var/run/docker.sock
-else
 endif
+WORKSPACE ?= $(CURDIR)
 
 help:
 	@printf "Available targets:\n"\
@@ -25,12 +28,19 @@ test: build
 	    $(IMAGE_NAME) bash /test.sh
 
 shell:
-	@echo "Starting interactive shell for $(CURDIR) in temporary container, using volume codex-data for session persistence …"
-	@docker run -it --rm ${DOCKER_VOL} \
-		-v $(CURDIR):/home/builder/workspace \
+	@echo "Starting interactive shell for $(WORKSPACE) in temporary container."
+	@echo "Using volume codex-data for session persistence."
+	docker run -it --rm ${DOCKER_VOL} \
+		-v $(WORKSPACE):/home/builder/workspace \
 		-v codex-data:/home/builder/.codex \
 		-v $(DOCKER_SOCKET):/var/run/docker.sock \
 		$(IMAGE_NAME) bash
+
+publish: build
+	@echo "Publishing $(IMAGE_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG) to Docker Hub."
+	@docker login $(IMAGE_REGISTRY)
+	@docker tag $(IMAGE_NAME) $(IMAGE_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
+	docker push $(IMAGE_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
 
 all: test
 
