@@ -22,19 +22,21 @@ build:
 
 test: build
 	@echo "Running tests inside container …"
-	@sleep 2
 	@docker run --rm $(DOCKER_VOL) \
 	    -v $(CURDIR)/test.sh:/test.sh:ro \
 	    $(IMAGE_NAME) bash /test.sh
 
-shell:
-	@echo "Starting interactive shell for $(WORKSPACE) in temporary container."
+shell: ENTRYPOINT := bash
+shell: codex
+
+codex:
+	@echo "Starting interactive session for $(WORKSPACE) in temporary container."
 	@echo "Using volume codex-data for session persistence."
 	docker run -it --rm ${DOCKER_VOL} \
 		-v $(WORKSPACE):/home/builder/workspace \
 		-v codex-data:/home/builder/.codex \
 		-v $(DOCKER_SOCKET):/var/run/docker.sock \
-		$(IMAGE_NAME) bash
+		$(IMAGE_NAME) $(ENTRYPOINT)
 
 publish: build
 	@echo "Publishing $(IMAGE_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG) to Docker Hub."

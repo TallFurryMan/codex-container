@@ -4,8 +4,8 @@ set -euo pipefail
 
 echo "=== Docker daemon info ==="
 if command -v docker >/dev/null 2>&1; then
-    if docker info >/dev/null 2>&1; then
-        docker info | head -n 3
+    if text="$(docker info 2>&1)"; then
+        echo "$text" | head -n 3
     else
         echo "  [WARNING] Docker daemon not reachable; only client is present" 
     fi

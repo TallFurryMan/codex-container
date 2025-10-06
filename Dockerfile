@@ -73,4 +73,4 @@ ENV WORKSPACE=${HOME}/workspace
 WORKDIR ${WORKSPACE}
 
 # Default command to keep container alive for debugging
-CMD ["bash"]
+CMD ["codex"]
