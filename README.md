@@ -53,6 +53,30 @@ make shell
 
 The container will drop you into a `bash` shell with the tools available.
 
+## Make Targets Overview
+The image provides a few convenient `make` targets that wrap common Docker
+operations:
+
+| Target | Action |
+|--------|--------|
+| `make build` | Build the Docker image for both amd64 and arm64 platforms |
+| `make test` | Run the built‑in `test.sh` sanity‑check inside the container |
+| `make shell` | Start an interactive shell in a temporary container |
+| `make codex` | Same as `shell` but mounts a persistent volume (`codex-data`) and can be used for an interactive Codex CLI session |
+
+The `codex` target is useful when you want to work with the Codex CLI or perform Git operations from inside the container. Because the container has no access to the host’s global Git configuration, you should ensure that the local repository has a valid `user.name` and `user.email` set, e.g.:
+
+```bash
+git config user.name "Your Name"
+git config user.email "you@example.com"
+```
+
+Alternatively, mount the host’s global config into the container:
+
+```bash
+docker run -it --rm -v ~/.gitconfig:/home/builder/.gitconfig ...
+```
+
 ## Usage as a Tooling Container
 
 The image is primarily intended to act as a drop‑in build environment for
@@ -69,4 +93,3 @@ README.md       – This file
 ```
 
 All files are licensed under the MIT license.
-
