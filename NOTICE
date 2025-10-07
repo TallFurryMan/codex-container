@@ -1,0 +1,17 @@
+This project includes several third‑party components. The following
+libraries and tools are bundled in the Docker image, each with its own
+license.
+
+* **Arduino CLI** – Apache License 2.0
+  <https://github.com/arduino/arduino-cli/blob/master/LICENSE>
+* **Raspberry Pi Pico SDK** – BSD 3‑Clause "New" or "Revised" License
+  <https://github.com/raspberrypi/pico-sdk/blob/master/LICENSE>
+* **OpenAI Python SDK** – Apache License 2.0
+  <https://github.com/openai/openai-python/blob/main/LICENSE>
+* **Bash** – GNU GPLv3 (the executable bundled with Debian)
+  <https://gnu.org/licenses/gpl-3.0.txt>
+* **Docker CE CLI** – Apache License 2.0
+  <https://github.com/docker/cli/blob/master/LICENSE>
+
+These licenses are compatible with the MIT license under which the
+repository’s own source code is distributed.
